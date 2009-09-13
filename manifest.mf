@@ -1,0 +1,2 @@
+Main-Class: WebUI.Wrapper
+Plugin-Main-Class: WebUI.WebUIPlugin
