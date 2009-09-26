@@ -1,0 +1,22 @@
+Freenet Plugin: Web Interface For Freemail
+
+WebUI contains almost all necessary mail features. After installations as a freenet plugin interface will be available at http://localhost:9999/
+Interface is written in JS and uses java-plugin as a webserver and as a proxy, that redirects AJAX-requests directly to IMAP and SMTP freemail servers.
+
+BROWSER COMPATIBILITY:
+  - Mozilla Firefox - yes
+  - Safari - not yet
+  - Opera - not yet
+  - Google Chrome - not yet
+  - Internet Explorer - no
+
+TODO:
+  - mail attachments
+  - search
+
+BUGS:
+  - some problems with cyrillic symbols
+
+AUTHOR:
+  sid@m4wvu4tmknjewvssivydovsyonneuyzumjfx4t3nfvudgnckmzlew3dbmvyemwlxjztekldhkfceowlonzxhmsdpi5cfst3rkbvfk6tqmjtwo6czgu4w6tzzjjrgkzlbofhuo52ki5rsyqkrifbucqkf.freemail
+

@@ -8,6 +8,7 @@ public class Proxy implements TCPClientListener{
 	
 	static Hashtable instances = new Hashtable();
 	static int session_tmp = 0;
+	static int[] allowed_ports = {3143, 3025};
 	
 	Socket client;
 	TCPClient server;
@@ -45,6 +46,7 @@ public class Proxy implements TCPClientListener{
     	int index = request.indexOf("\r\n\r\n");
     	String headers_str = request.substring(0, index);
     	String body = request.substring(index + 4);
+    	boolean close = false;
     	
     	String [] headers_arr = headers_str.split("\r\n");
     	Hashtable headers = new Hashtable();
@@ -73,28 +75,46 @@ public class Proxy implements TCPClientListener{
 				((Proxy) instance).onClientData(body);
 				response(ps, "ok", null);
 			}
+			close = true;
+		} else {
+			// new proxy-connection request
+				
+			int port = Integer.parseInt((String) headers.get("port"));
+			boolean allowed = false;
+			for(int i = 0; i < allowed_ports.length; i++){
+				if(allowed_ports[i] == port){
+					allowed = true;
+					break;
+				}
+			}
+			
+			if(allowed){			
+				WebServer.log("New proxied request on port " + String.valueOf(port));
+				
+				String session = generateSession();
+				
+				Proxy proxy = new Proxy(ps, s, body, port);
+				instances.put((Object) session, proxy); 
+					
+				Hashtable hdrs = new Hashtable();
+				hdrs.put("session", (Object) session);	
+				response(ps, null, hdrs);
+				
+				proxy.connect();
+				close = false;
+			} else {
+				WebServer.log("Access denied: port " + String.valueOf(port) + " is not allowed");
+				close = true;
+			}
+		} 
+		
+		if(close){
 			try{
 				s.close();
 			} catch(IOException e){
 				e.printStackTrace();
 			}
-		} else {
-			// new proxy-connection request
-				
-			int port = Integer.parseInt((String) headers.get("port"));
-			WebServer.log("New proxied request on port " + String.valueOf(port));
-			
-			String session = generateSession();
-			
-			Proxy proxy = new Proxy(ps, s, body, port);
-			instances.put((Object) session, proxy); 
-				
-			Hashtable hdrs = new Hashtable();
-			hdrs.put("session", (Object) session);	
-			response(ps, null, hdrs);
-			
-			proxy.connect();
-		} 
+		}
 			
     }
     
